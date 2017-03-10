@@ -1,30 +1,24 @@
 from Tkinter import *
 import time
 
-class ClientWindow:
+class RTSClient:
     def __init__(self):
         self.root = Tk()
-        self.root.title("ClientWindow")
-        self.canvas = Canvas(self.root)
-        self.canvas.focus_set() #   need to set the focus for any bindings to work
+        self.root.title("RTSClient")
+        self.canvas = Canvas(self.root) #   create canvas for drawings
         
         #   Screen vars
-        w = 0.5 * self.root.winfo_screenwidth()
-        h = 0.5 * self.root.winfo_screenheight()
-        self.screen = (w, h)
-        
-        #   Canvas Configuration
-        self.canvas.configure(width=self.screen[0], height=self.screen[1], background='black')
-        self.canvas.create_rectangle(0, 0, self.screen[0], self.screen[1], fill='black', tags='MainWin')
-        self.canvas.pack(fill=BOTH, expand=YES)
+        (wMax, hMax) = self.get_screen_size()
+        (w, h) = (wMax / 2, hMax / 2)        
+        self.wndwSize = (w, h)
         
         #   Update App Window
-        self.root.update()
+        self.root.config(width=w, height=h, bg='black')
         self.center_window()
                 
         #   Create Widget Frames
-        self.btnFrame = Frame(bg="gray5")
-        self.vidFrame = Frame(bg="gray5")
+        self.btnFrame = Frame(bg="gray10")
+        self.vidFrame = Frame(bg="gray10")
         
         #   Create Buttons
         self.btnSetup = Button(self.btnFrame, text="Setup", command=self.btn_setup)
@@ -46,22 +40,23 @@ class ClientWindow:
         self.root.bind("<Configure>", self.resize)
       
     #   Utilities
-    def get_max_screen(self):
+    def get_screen_size(self):
         #   Returns the size (in pixels) of the current monitor
         w = self.root.winfo_screenwidth()
         h = self.root.winfo_screenheight()
         return (w, h)
         
-    def get_current_screen(self):
+    def get_wndw_size(self):
         #   Returns the size (in pixels) of the current app screen
         w = self.root.winfo_width()
         h = self.root.winfo_height()
         return (w, h)
         
     def center_window(self, canvas = None):
+        self.root.update()
         x = (self.root.winfo_screenwidth()/2) - (self.root.winfo_width()/2)
         y = (self.root.winfo_screenheight()/2) - (self.root.winfo_height()/2)
-        self.root.geometry('%dx%d+%d+%d' % (self.screen[0], self.screen[1], x, y))
+        self.root.geometry('%dx%d+%d+%d' % (self.wndwSize[0], self.wndwSize[1], x, y))
         
     def click_is_valid(self):
         #   Curates button presses to cap the rate of button presses
@@ -73,12 +68,13 @@ class ClientWindow:
         
     #   Events
     def resize(self, event = None):
-        #   Resizes the frames and widgets whenever the window screen size changes    
-        (w, h) = self.get_current_screen()
-        if (event is not None and self.screen == (w, h)):
+        #   Resizes the frames and widgets whenever the window screen size changes
+        #self.root.update()
+        (w, h) = self.get_wndw_size()
+        if (event is not None and self.wndwSize == (w, h)):
             return
             
-        self.screen = (w, h)
+        self.wndwSize = (w, h)
 
         self.btnFrame.config(width=w, height=.2*h)
         self.btnFrame.place(relx=0.5,rely=0.9, anchor="c")
@@ -86,7 +82,7 @@ class ClientWindow:
         self.vidFrame.config(width=.8*w, height=.75*h)
         self.vidFrame.place(relx=0.5,rely=0.4, anchor="c")
         
-        btnSize = (int(self.screen[0] / 60), int(self.screen[1] / 170))
+        btnSize = (int(self.wndwSize[0] / 60), int(self.wndwSize[1] / 170))
         
         self.btnSetup.config(width=btnSize[0], height=btnSize[1])
         self.btnSetup.place(relx=0.25, rely=0.5, anchor="c")
@@ -130,7 +126,7 @@ class ClientWindow:
         print "teardown"
         
 def main():
-    app = ClientWindow()
+    app = RTSClient()
     app.root.mainloop()
     
 if __name__ == "__main__":
