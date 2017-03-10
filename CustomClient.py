@@ -1,10 +1,13 @@
-from Tkinter import *
+import argparse
+import sys
 import time
 
-class RTSClient:
+from Tkinter import *
+
+class RTPClientApp:
     def __init__(self):
         self.root = Tk()
-        self.root.title("RTSClient")
+        self.root.title("RTPClient")
         self.canvas = Canvas(self.root) #   create canvas for drawings
         
         #   Screen vars
@@ -125,9 +128,19 @@ class RTSClient:
             return
         print "teardown"
         
-def main():
-    app = RTSClient()
+def main(serverAddr, serverPort, rtpPort, fileName):
+
+    app = RTPClientApp()
     app.root.mainloop()
     
 if __name__ == "__main__":
-   main()
+    try:
+        serverAddr = sys.argv[1]
+        serverPort = sys.argv[2]
+        rtpPort = sys.argv[3]
+        fileName = sys.argv[4]
+        main(serverAddr, serverPort, rtpPort, fileName)
+    except:
+        print "[Usage: ClientLauncher.py Server_name Server_port RTP_port Video_file]"
+        print "Launching in Debug mode."
+        main(None, None, None, None)
